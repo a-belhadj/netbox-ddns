@@ -15,7 +15,7 @@ from netbox.views.generic import ObjectDeleteView, ObjectEditView, ObjectView, O
 
 from django.views.generic import View
 
-from utilities.views import register_model_view
+from utilities.views import register_model_view, GetRelatedModelsMixin
 
 
 # ReverseZone
@@ -83,9 +83,16 @@ class ZoneBulkDeleteView(BulkDeleteView):
 
 # Server
 @register_model_view(Server)
-class ServerView(ObjectView):
+class ServerView(GetRelatedModelsMixin, ObjectView):
     queryset = Server.objects.all()
 
+    def get_extra_context(self, request, instance):
+        return {
+            'related_models': self.get_related_models(
+                request,
+                instance
+            )
+        }
 
 @register_model_view(Server, 'list', path='', detail=False)
 class ServerListView(ObjectListView):

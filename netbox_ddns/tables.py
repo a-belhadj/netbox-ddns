@@ -16,15 +16,21 @@ FORWARD_DNS = """
 
 
 class ReverseZoneTable(NetBoxTable):
+    name = LinkColumn()
+    server = RelatedLinkColumn()
+
     class Meta(NetBoxTable.Meta):
         model = ReverseZone
-        fields = ("id", "name", "prefix", "ttl", "server")
+        fields = ("id", "name", "prefix", "server", "ttl")
 
 
 class ZoneTable(NetBoxTable):
+    name = LinkColumn()
+    server = RelatedLinkColumn()
+
     class Meta(NetBoxTable.Meta):
         model = Zone
-        fields = ("id", "name", "ttl", "server")
+        fields = ("id", "name", "server", "ttl")
 
 
 class ServerTable(NetBoxTable):
