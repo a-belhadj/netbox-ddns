@@ -1,9 +1,11 @@
 import django_tables2 as tables
+from django_tables2 import LinkColumn
 
-from netbox_ddns.models import ExtraDNSName
+from netbox_ddns.models import ExtraDNSName, Server
+
 try:
     # NetBox >= 3.2.0
-    from netbox.tables import BaseTable
+    from netbox.tables import BaseTable, NetBoxTable
     from netbox.tables.columns import ToggleColumn, DateTimeColumn
 except ImportError:
     # NetBox < 3.2.0
@@ -38,6 +40,13 @@ ACTIONS = """
         </a>
     {% endif %}
 """
+
+
+class ServerTable(NetBoxTable):
+    server = LinkColumn()
+    class Meta(NetBoxTable.Meta):
+        model = Server
+        fields = ("id", "server", "server_port", "tsig_key_name", "tsig_algorithm")
 
 
 class PrefixTable(BaseTable):

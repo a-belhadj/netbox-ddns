@@ -62,7 +62,7 @@ def get_rcode_display(code):
         return _('Unknown response: {}').format(code)
 
 
-class Server(models.Model):
+class Server(NetBoxModel):
     server = models.CharField(
         verbose_name=_('DDNS Server'),
         max_length=255,
@@ -110,13 +110,11 @@ class Server(models.Model):
 
         # Ensure trailing dots from domain-style fields
         self.tsig_key_name = normalize_fqdn(self.tsig_key_name.lower().rstrip('.'))
-
+    def get_absolute_url(self):
+        return reverse('plugins:netbox_ddns:server', args=[self.pk])
     @property
     def address(self) -> Optional[str]:
-        addrinfo = socket.getaddrinfo(self.server, self.server_port, proto=socket.IPPROTO_UDP)
-        for family, _, _, _, sockaddr in addrinfo:
-            if family in (socket.AF_INET, socket.AF_INET6) and sockaddr[0]:
-                return sockaddr[0]
+        return socket.gethostbyname(self.server)
 
     def create_update(self, zone: str) -> dns.update.Update:
         return dns.update.Update(

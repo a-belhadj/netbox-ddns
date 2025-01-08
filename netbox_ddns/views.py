@@ -1,23 +1,52 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.http import Http404
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.shortcuts import get_object_or_404, redirect
 from django.utils.translation import gettext as _
-from django.views import View
 
 from ipam.models import IPAddress
 from netbox_ddns.background_tasks import dns_create
-from netbox_ddns.forms import ExtraDNSNameEditForm
-from netbox_ddns.models import DNSStatus, ExtraDNSName
+from netbox_ddns.filtersets import ServerFilterSet
+from netbox_ddns.forms import ExtraDNSNameEditForm, ServerForm
+from netbox_ddns.models import DNSStatus, ExtraDNSName, Server
+from netbox_ddns.tables import ServerTable
 from netbox_ddns.utils import normalize_fqdn
 
-from utilities.forms import ConfirmationForm
-from utilities.htmx import htmx_partial
-from utilities.views import get_viewname
+from netbox.views.generic import ObjectDeleteView, ObjectEditView, ObjectView, ObjectListView, BulkDeleteView
 
-from netbox.views.generic import ObjectDeleteView, ObjectEditView, ObjectView
+from django.views.generic import View
 
+from utilities.views import register_model_view
+
+
+@register_model_view(Server)
+class ServerView(ObjectView):
+    queryset = Server.objects.all()
+
+
+@register_model_view(Server, 'list', path='', detail=False)
+class ServerListView(ObjectListView):
+    queryset = Server.objects.all()
+    table = ServerTable
+    filterset = ServerFilterSet
+
+
+@register_model_view(Server, 'add', detail=False)
+@register_model_view(Server, 'edit')
+class ServerEditView(ObjectEditView):
+    queryset = Server.objects.all()
+    form = ServerForm
+
+
+@register_model_view(Server, 'delete')
+class ServerDeleteView(ObjectDeleteView):
+    queryset = Server.objects.all()
+
+
+@register_model_view(Server, 'bulk_delete', path='delete', detail=False)
+class ServerBulkDeleteView(BulkDeleteView):
+    queryset = Server.objects.all()
+    filterset = ServerFilterSet
+    table = ServerTable
 
 class ExtraDNSNameCreateView(PermissionRequiredMixin, ObjectEditView):
     permission_required = 'netbox_ddns.add_extradnsname'

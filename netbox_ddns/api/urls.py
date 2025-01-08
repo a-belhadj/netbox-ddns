@@ -6,5 +6,6 @@ app_name = 'netbox_ddns'
 
 router = NetBoxRouter()
 router.register('extra-dns-name', views.ExtraDNSNameViewSet)
+router.register('server', views.ServerViewSet)
 
 urlpatterns = router.urls
