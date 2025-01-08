@@ -2,9 +2,15 @@ from django import forms
 from django.forms import IntegerField
 
 from netbox.forms import NetBoxModelForm, NetBoxModelBulkEditForm
-from netbox_ddns.models import ExtraDNSName, Server, Zone
+from netbox_ddns.models import ExtraDNSName, Server, Zone, ReverseZone
 from utilities.forms.fields import DynamicModelChoiceField
 from utilities.forms.rendering import FieldSet
+
+
+class ReverseZoneForm(NetBoxModelForm):
+    class Meta:
+        model = ReverseZone
+        fields = ('prefix', 'name', 'ttl', 'server')
 
 
 class ZoneForm(NetBoxModelForm):

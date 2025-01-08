@@ -17,7 +17,8 @@ from ipam.fields import IPNetworkField
 from ipam.models import IPAddress
 from utilities.querysets import RestrictedQuerySet
 from .utils import normalize_fqdn
-from .validators import HostnameAddressValidator, HostnameValidator, validate_base64, MinValueValidator, MaxValueValidator
+from .validators import HostnameAddressValidator, HostnameValidator, validate_base64, MinValueValidator, \
+    MaxValueValidator
 
 logger = logging.getLogger('netbox_ddns')
 
@@ -111,8 +112,10 @@ class Server(NetBoxModel):
 
         # Ensure trailing dots from domain-style fields
         self.tsig_key_name = normalize_fqdn(self.tsig_key_name.lower().rstrip('.'))
+
     def get_absolute_url(self):
         return reverse('plugins:netbox_ddns:server', args=[self.pk])
+
     @property
     def address(self) -> Optional[str]:
         return socket.gethostbyname(self.server)
@@ -177,7 +180,7 @@ class Zone(NetBoxModel):
         return reverse('plugins:netbox_ddns:zone', args=[self.pk])
 
 
-class ReverseZoneQuerySet(models.QuerySet):
+class ReverseZoneQuerySet(RestrictedQuerySet):
     def find_for_address(self, address: ip.IPAddress) -> Optional['ReverseZone']:
         # Find the zone, if any
         zones = list(ReverseZone.objects.filter(prefix__net_contains=address))
@@ -188,7 +191,7 @@ class ReverseZoneQuerySet(models.QuerySet):
         return zones[-1]
 
 
-class ReverseZone(models.Model):
+class ReverseZone(NetBoxModel):
     prefix = IPNetworkField(
         verbose_name=_('prefix'),
         unique=True,
@@ -217,6 +220,9 @@ class ReverseZone(models.Model):
 
     def __str__(self):
         return f'for {self.prefix}'
+
+    def get_absolute_url(self):
+        return reverse('plugins:netbox_ddns:reversezone', args=[self.pk])
 
     def record_name(self, address: ip.IPAddress):
         record_name = self.name

@@ -5,10 +5,10 @@ from django.utils.translation import gettext as _
 
 from ipam.models import IPAddress
 from netbox_ddns.background_tasks import dns_create
-from netbox_ddns.filtersets import ServerFilterSet, ZoneFilterSet
-from netbox_ddns.forms import ExtraDNSNameEditForm, ServerForm, ZoneForm
-from netbox_ddns.models import DNSStatus, ExtraDNSName, Server, Zone
-from netbox_ddns.tables import ServerTable, ZoneTable
+from netbox_ddns.filtersets import ServerFilterSet, ZoneFilterSet, ReverseZoneFilterSet
+from netbox_ddns.forms import ExtraDNSNameEditForm, ServerForm, ZoneForm, ReverseZoneForm
+from netbox_ddns.models import DNSStatus, ExtraDNSName, Server, Zone, ReverseZone
+from netbox_ddns.tables import ServerTable, ZoneTable, ReverseZoneTable
 from netbox_ddns.utils import normalize_fqdn
 
 from netbox.views.generic import ObjectDeleteView, ObjectEditView, ObjectView, ObjectListView, BulkDeleteView
@@ -17,6 +17,36 @@ from django.views.generic import View
 
 from utilities.views import register_model_view
 
+
+# ReverseZone
+@register_model_view(ReverseZone)
+class ReverseZoneView(ObjectView):
+    queryset = ReverseZone.objects.all()
+
+
+@register_model_view(ReverseZone, 'list', path='', detail=False)
+class ReverseZoneListView(ObjectListView):
+    queryset = ReverseZone.objects.all()
+    table = ReverseZoneTable
+
+
+@register_model_view(ReverseZone, 'add', detail=False)
+@register_model_view(ReverseZone, 'edit')
+class ReverseZoneEditView(ObjectEditView):
+    queryset = ReverseZone.objects.all()
+    form = ReverseZoneForm
+
+
+@register_model_view(ReverseZone, 'delete')
+class ReverseZoneDeleteView(ObjectDeleteView):
+    queryset = ReverseZone.objects.all()
+
+
+@register_model_view(ReverseZone, 'bulk_delete', path='delete', detail=False)
+class ReverseZoneBulkDeleteView(BulkDeleteView):
+    queryset = ReverseZone.objects.all()
+    filterset = ReverseZoneFilterSet
+    table = ReverseZoneTable
 
 # Zone
 @register_model_view(Zone)

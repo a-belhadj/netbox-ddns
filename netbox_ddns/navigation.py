@@ -26,6 +26,17 @@ menu = PluginMenu(
                     )
                 ]
             ),
+            PluginMenuItem(
+                link='plugins:netbox_ddns:reversezone_list',
+                link_text='Reverse Zones',
+                buttons=[
+                    PluginMenuButton(
+                        link='plugins:netbox_ddns:reversezone_add',
+                        title='Add',
+                        icon_class='mdi mdi-plus-thick',
+                    )
+                ]
+            ),
         ),
       ),
     ),

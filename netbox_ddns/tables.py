@@ -1,7 +1,7 @@
 import django_tables2 as tables
 from django_tables2 import LinkColumn
 
-from netbox_ddns.models import ExtraDNSName, Server
+from netbox_ddns.models import ExtraDNSName, Server, ReverseZone, Zone
 
 try:
     # NetBox >= 3.2.0
@@ -40,6 +40,12 @@ ACTIONS = """
         </a>
     {% endif %}
 """
+
+
+class ReverseZoneTable(NetBoxTable):
+    class Meta(NetBoxTable.Meta):
+        model = ReverseZone
+        fields = ("id", "name", "prefix", "ttl", "server")
 
 
 class ZoneTable(NetBoxTable):

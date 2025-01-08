@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
 from ipam.models import IPAddress
 from netbox.api.serializers import NetBoxModelSerializer
-from ..models import ExtraDNSName, Server, Zone
+from ..models import ExtraDNSName, Server, Zone, ReverseZone
 
 
 class ExtraDNSNameSerializer(NetBoxModelSerializer):
@@ -27,3 +27,9 @@ class ZoneSerializer(NetBoxModelSerializer):
     class Meta:
         model = Zone
         fields = ('name', 'ttl', 'server')
+
+
+class ReverseZoneSerializer(NetBoxModelSerializer):
+    class Meta:
+        model = ReverseZone
+        fields = ('name', 'prefix', 'ttl', 'server')

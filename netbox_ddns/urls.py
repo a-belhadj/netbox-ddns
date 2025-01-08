@@ -4,6 +4,10 @@ from utilities.urls import get_model_urls
 from .views import ExtraDNSNameCreateView, ExtraDNSNameDeleteView, ExtraDNSNameEditView, IPAddressDNSNameRecreateView, ExtraDNSNameView
 
 urlpatterns = [
+
+    path('reverse-zones/', include(get_model_urls('netbox_ddns', 'reversezone', detail=False))),
+    path('reverse-zones/<int:pk>/', include(get_model_urls('netbox_ddns', 'reversezone'))),
+
     path('zones/', include(get_model_urls('netbox_ddns', 'zone', detail=False))),
     path('zones/<int:pk>/', include(get_model_urls('netbox_ddns', 'zone'))),
 

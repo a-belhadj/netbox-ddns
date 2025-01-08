@@ -1,5 +1,7 @@
+import django_filters
+
 from netbox.filtersets import NetBoxModelFilterSet
-from .models import ExtraDNSName, Server, Zone
+from .models import ExtraDNSName, Server, Zone, ReverseZone
 
 
 class ExtraDNSNameFilterSet(NetBoxModelFilterSet):
@@ -18,3 +20,10 @@ class ZoneFilterSet(NetBoxModelFilterSet):
     class Meta:
         model = Zone
         fields = ('id', 'name', 'ttl', 'server')
+
+
+class ReverseZoneFilterSet(NetBoxModelFilterSet):
+    prefix = django_filters.CharFilter(lookup_expr='icontains')
+    class Meta:
+        model = ReverseZone
+        fields = ('id', 'name', 'prefix', 'ttl', 'server')
