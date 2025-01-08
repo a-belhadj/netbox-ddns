@@ -5,10 +5,10 @@ from django.utils.translation import gettext as _
 
 from ipam.models import IPAddress
 from netbox_ddns.background_tasks import dns_create
-from netbox_ddns.filtersets import ServerFilterSet
-from netbox_ddns.forms import ExtraDNSNameEditForm, ServerForm
-from netbox_ddns.models import DNSStatus, ExtraDNSName, Server
-from netbox_ddns.tables import ServerTable
+from netbox_ddns.filtersets import ServerFilterSet, ZoneFilterSet
+from netbox_ddns.forms import ExtraDNSNameEditForm, ServerForm, ZoneForm
+from netbox_ddns.models import DNSStatus, ExtraDNSName, Server, Zone
+from netbox_ddns.tables import ServerTable, ZoneTable
 from netbox_ddns.utils import normalize_fqdn
 
 from netbox.views.generic import ObjectDeleteView, ObjectEditView, ObjectView, ObjectListView, BulkDeleteView
@@ -18,6 +18,37 @@ from django.views.generic import View
 from utilities.views import register_model_view
 
 
+# Zone
+@register_model_view(Zone)
+class ZoneView(ObjectView):
+    queryset = Zone.objects.all()
+
+
+@register_model_view(Zone, 'list', path='', detail=False)
+class ZoneListView(ObjectListView):
+    queryset = Zone.objects.all()
+    table = ZoneTable
+    filterset = ZoneFilterSet
+
+
+@register_model_view(Zone, 'add', detail=False)
+@register_model_view(Zone, 'edit')
+class ZoneEditView(ObjectEditView):
+    queryset = Zone.objects.all()
+    form = ZoneForm
+
+
+@register_model_view(Zone, 'delete')
+class ZoneDeleteView(ObjectDeleteView):
+    queryset = Zone.objects.all()
+
+@register_model_view(Zone, 'bulk_delete', path='delete', detail=False)
+class ZoneBulkDeleteView(BulkDeleteView):
+    queryset = Zone.objects.all()
+    filterset = ZoneFilterSet
+    table = ZoneTable
+
+# Server
 @register_model_view(Server)
 class ServerView(ObjectView):
     queryset = Server.objects.all()

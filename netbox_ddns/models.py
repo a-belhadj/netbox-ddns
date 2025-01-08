@@ -15,6 +15,7 @@ from typing import Optional
 from netbox.models import NetBoxModel
 from ipam.fields import IPNetworkField
 from ipam.models import IPAddress
+from utilities.querysets import RestrictedQuerySet
 from .utils import normalize_fqdn
 from .validators import HostnameAddressValidator, HostnameValidator, validate_base64, MinValueValidator, MaxValueValidator
 
@@ -127,7 +128,7 @@ class Server(NetBoxModel):
         )
 
 
-class ZoneQuerySet(models.QuerySet):
+class ZoneQuerySet(RestrictedQuerySet):
     def find_for_dns_name(self, dns_name: str) -> Optional['Zone']:
         # Generate all possible zones
         zones = []
@@ -139,7 +140,7 @@ class ZoneQuerySet(models.QuerySet):
         return self.filter(name__in=zones).order_by(Length('name').desc()).first()
 
 
-class Zone(models.Model):
+class Zone(NetBoxModel):
     name = models.CharField(
         verbose_name=_('zone name'),
         max_length=255,
@@ -171,6 +172,9 @@ class Zone(models.Model):
 
     def get_updater(self):
         return self.server.create_update(self.name)
+
+    def get_absolute_url(self):
+        return reverse('plugins:netbox_ddns:zone', args=[self.pk])
 
 
 class ReverseZoneQuerySet(models.QuerySet):

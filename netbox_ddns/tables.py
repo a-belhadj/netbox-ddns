@@ -42,8 +42,15 @@ ACTIONS = """
 """
 
 
+class ZoneTable(NetBoxTable):
+    class Meta(NetBoxTable.Meta):
+        model = Zone
+        fields = ("id", "name", "ttl", "server")
+
+
 class ServerTable(NetBoxTable):
     server = LinkColumn()
+
     class Meta(NetBoxTable.Meta):
         model = Server
         fields = ("id", "server", "server_port", "tsig_key_name", "tsig_algorithm")

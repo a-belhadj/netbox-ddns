@@ -6,10 +6,21 @@ menu = PluginMenu(
         ('Configuration', (
             PluginMenuItem(
                 link='plugins:netbox_ddns:server_list',
-                link_text='DDNS servers',
+                link_text='DDNS Servers',
                 buttons=[
                     PluginMenuButton(
                         link='plugins:netbox_ddns:server_add',
+                        title='Add',
+                        icon_class='mdi mdi-plus-thick',
+                    )
+                ]
+            ),
+            PluginMenuItem(
+                link='plugins:netbox_ddns:zone_list',
+                link_text='Forward Zones',
+                buttons=[
+                    PluginMenuButton(
+                        link='plugins:netbox_ddns:zone_add',
                         title='Add',
                         icon_class='mdi mdi-plus-thick',
                     )
