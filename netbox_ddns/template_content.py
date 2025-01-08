@@ -23,7 +23,8 @@ class DNSInfo(PluginTemplateExtension):
         """
         An info-box with the status of the DNS modifications and records
         """
-        extra_dns_name_table = tables.PrefixTable(list(self.context['object'].extradnsname_set.all()), orderable=False)
+        extra_dns_name_table = tables.ExtraDNSNameTable(list(self.context['object'].extradnsname_set.all()),
+                                                        exclude=["id", "ip_address"], orderable=False)
 
         return (
                 self.render('netbox_ddns/ipaddress/dns_info.html') +

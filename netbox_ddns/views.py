@@ -5,10 +5,10 @@ from django.utils.translation import gettext as _
 
 from ipam.models import IPAddress
 from netbox_ddns.background_tasks import dns_create
-from netbox_ddns.filtersets import ServerFilterSet, ZoneFilterSet, ReverseZoneFilterSet
-from netbox_ddns.forms import ExtraDNSNameEditForm, ServerForm, ZoneForm, ReverseZoneForm
+from netbox_ddns.filtersets import ServerFilterSet, ZoneFilterSet, ReverseZoneFilterSet, ExtraDNSNameFilterSet
+from netbox_ddns.forms import ServerForm, ZoneForm, ReverseZoneForm, ExtraDNSNameIPAddressForm, ExtraDNSNameForm
 from netbox_ddns.models import DNSStatus, ExtraDNSName, Server, Zone, ReverseZone
-from netbox_ddns.tables import ServerTable, ZoneTable, ReverseZoneTable
+from netbox_ddns.tables import ServerTable, ZoneTable, ReverseZoneTable, ExtraDNSNameTable
 from netbox_ddns.utils import normalize_fqdn
 
 from netbox.views.generic import ObjectDeleteView, ObjectEditView, ObjectView, ObjectListView, BulkDeleteView
@@ -48,6 +48,7 @@ class ReverseZoneBulkDeleteView(BulkDeleteView):
     filterset = ReverseZoneFilterSet
     table = ReverseZoneTable
 
+
 # Zone
 @register_model_view(Zone)
 class ZoneView(ObjectView):
@@ -72,11 +73,13 @@ class ZoneEditView(ObjectEditView):
 class ZoneDeleteView(ObjectDeleteView):
     queryset = Zone.objects.all()
 
+
 @register_model_view(Zone, 'bulk_delete', path='delete', detail=False)
 class ZoneBulkDeleteView(BulkDeleteView):
     queryset = Zone.objects.all()
     filterset = ZoneFilterSet
     table = ZoneTable
+
 
 # Server
 @register_model_view(Server)
@@ -109,38 +112,57 @@ class ServerBulkDeleteView(BulkDeleteView):
     filterset = ServerFilterSet
     table = ServerTable
 
-class ExtraDNSNameCreateView(PermissionRequiredMixin, ObjectEditView):
-    permission_required = 'netbox_ddns.add_extradnsname'
-    queryset = ExtraDNSName.objects.all()
-    form = ExtraDNSNameEditForm
 
-    def get_object(self, *args, **kwargs):
-        ip_address = get_object_or_404(IPAddress, pk=kwargs['ipaddress_pk'])
-        return ExtraDNSName(ip_address=ip_address)
-
-
-class ExtraDNSNameView(PermissionRequiredMixin, ObjectView):
-    permission_required = 'netbox_ddns.view_extradnsname'
+# ExtraDNSName
+@register_model_view(ExtraDNSName)
+class ExtraDNSNameView(ObjectView):
     queryset = ExtraDNSName.objects.all()
 
 
-class ExtraDNSNameEditView(PermissionRequiredMixin, ObjectEditView):
-    permission_required = 'netbox_ddns.change_extradnsname'
+@register_model_view(ExtraDNSName, 'list', path='', detail=False)
+class ExtraDNSNameListView(ObjectListView):
     queryset = ExtraDNSName.objects.all()
-    form = ExtraDNSNameEditForm
-
-    def get_object(self, *args, **kwargs):
-        return get_object_or_404(ExtraDNSName, pk=kwargs['pk'])
+    table = ExtraDNSNameTable
+    filterset = ExtraDNSNameFilterSet
 
 
-class ExtraDNSNameDeleteView(PermissionRequiredMixin, ObjectDeleteView):
-    permission_required = 'netbox_ddns.delete_extradnsname'
+@register_model_view(ExtraDNSName, 'add', detail=False)
+class ExtraDNSNameEditView(ObjectEditView):
+    queryset = ExtraDNSName.objects.all()
+    form = ExtraDNSNameForm
+
+
+@register_model_view(ExtraDNSName, 'edit')
+class ExtraDNSNameEditView(ObjectEditView):
+    queryset = ExtraDNSName.objects.all()
+    form = ExtraDNSNameIPAddressForm
+
+
+@register_model_view(ExtraDNSName, 'delete')
+class ExtraDNSNameDeleteView(ObjectDeleteView):
     queryset = ExtraDNSName.objects.all()
 
     def get_return_url(self, request, obj=None):
         if obj and obj.ip_address:
             return obj.ip_address.get_absolute_url()
         return super().get_return_url(request, obj)
+
+
+@register_model_view(ExtraDNSName, 'bulk_delete', path='delete', detail=False)
+class ExtraDNSNameBulkDeleteView(BulkDeleteView):
+    queryset = ExtraDNSName.objects.all()
+    filterset = ExtraDNSNameFilterSet
+    table = ExtraDNSNameTable
+
+
+class ExtraDNSNameCreateView(PermissionRequiredMixin, ObjectEditView):
+    permission_required = 'netbox_ddns.add_extradnsname'
+    queryset = ExtraDNSName.objects.all()
+    form = ExtraDNSNameIPAddressForm
+
+    def get_object(self, *args, **kwargs):
+        ip_address = get_object_or_404(IPAddress, pk=kwargs['ipaddress_pk'])
+        return ExtraDNSName(ip_address=ip_address)
 
 
 class IPAddressDNSNameRecreateView(PermissionRequiredMixin, View):

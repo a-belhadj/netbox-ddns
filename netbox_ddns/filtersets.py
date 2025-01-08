@@ -24,6 +24,7 @@ class ZoneFilterSet(NetBoxModelFilterSet):
 
 class ReverseZoneFilterSet(NetBoxModelFilterSet):
     prefix = django_filters.CharFilter(lookup_expr='icontains')
+
     class Meta:
         model = ReverseZone
         fields = ('id', 'name', 'prefix', 'ttl', 'server')

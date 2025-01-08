@@ -37,6 +37,17 @@ menu = PluginMenu(
                     )
                 ]
             ),
+            PluginMenuItem(
+                link='plugins:netbox_ddns:extradnsname_list',
+                link_text='Extra DNS names',
+                buttons=[
+                    PluginMenuButton(
+                        link='plugins:netbox_ddns:extradnsname_add',
+                        title='Add',
+                        icon_class='mdi mdi-plus-thick',
+                    )
+                ]
+            ),
         ),
       ),
     ),
