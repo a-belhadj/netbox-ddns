@@ -5,7 +5,6 @@ from .serializers import ExtraDNSNameSerializer
 
 
 class ExtraDNSNameViewSet(NetBoxModelViewSet):
-    queryset = ExtraDNSName.objects.all()
+    queryset = ExtraDNSName.objects.select_related("ip_address").all()
     serializer_class = ExtraDNSNameSerializer
     filterset_class = ExtraDNSNameFilterSet
-
